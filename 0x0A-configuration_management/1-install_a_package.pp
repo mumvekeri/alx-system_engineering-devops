@@ -1,21 +1,17 @@
 #!/usr/bin/pup
-# installs puppet-lint when run
+# my_flask_module/manifests/init.pp
 
-# File: site.pp
+class my_flask_module {
+  package { 'python3-pip':
+    ensure => installed,
+  }
 
-# Ensure Python is installed
-package { 'python3':
-  ensure => present,
+  exec { 'install_flask':
+    command => '/usr/bin/pip3 install flask==2.1.0',
+    unless  => '/usr/bin/pip3 show flask | grep -q "Version: 2.1.0"',
+    require => Package['python3-pip'],
+  }
 }
 
-# Ensure pip is installed
-package { 'python3-pip':
-  ensure => present,
-}
+include my_flask_module
 
-# Install Flask using pip3
-package { 'flask':
-  ensure   => '2.1.0',
-  provider => 'pip3',
-  require  => [Package['python3'], Package['python3-pip']],
-}
