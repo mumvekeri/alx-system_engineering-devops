@@ -1,3 +1,4 @@
+#!/usr/bin/pup
 # installs puppet-lint when run
 
 package { 'puppet-lint':
