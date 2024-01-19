@@ -1,17 +1,17 @@
 #!/usr/bin/pup
-# my_flask_module/manifests/init.pp
-
-class my_flask_module {
-  package { 'python3-pip':
-    ensure => installed,
-  }
-
-  exec { 'install_flask':
-    command => '/usr/bin/pip3 install flask==2.1.0',
-    unless  => '/usr/bin/pip3 show flask | grep -q "Version: 2.1.0"',
-    require => Package['python3-pip'],
-  }
+# puppet apply 1-install_a_package.pp
+package {'python3-pip':
+  ensure => installed,
 }
 
-include my_flask_module
+package {'flask':
+  ensure => '2.1.0',
+  provider => 'pip'
+  require => Package['python3-pip'],
+}
 
+package {'werkzeug':
+  ensure => '2.0.1',
+  provider => 'pip'
+  require => Package['python3-pip'],
+}
