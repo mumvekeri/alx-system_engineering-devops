@@ -1,0 +1,4 @@
+#Your SSH client configuration must be configured to use the private key ~/.ssh/school
+Host *
+      PasswordAuthentication no
+      IdentifyFile ~/.ssh/school
