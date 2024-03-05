@@ -1,31 +1,17 @@
 #!/usr/bin/python3
-"""
-Importing requests module
-"""
-
-from requests import get
+"""a function that queries the Reddit API and returns the number of
+subscribers for a given subreddit"""
+import requests
 
 
 def number_of_subscribers(subreddit):
-    """
-    function that queries the Reddit API and returns the number of subscribers
-    (not active users, total subscribers) for a given subreddit.
-    """
-
-    if subreddit is None or not isinstance(subreddit, str):
+    """Return the total number of subscribers on a given subreddit."""
+    url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
+    headers = {
+        "User-Agent": "linux:0x16.api.advanced:v1.0.0 (by /u/bdov_)"
+    }
+    response = requests.get(url, headers=headers, allow_redirects=False)
+    if response.status_code == 404:
         return 0
-
-    user_agent = {'User-agent': 'YourBotName/1.0'}  # Update with your desired User-Agent
-    url = 'https://www.reddit.com/r/{}/about.json'.format(subreddit)
-    
-    try:
-        response = get(url, headers=user_agent)
-        all_data = response.json()
-        return all_data.get('data').get('subscribers')
-    except:
-        return 0
-
-# Example usage:
-subreddit_name = "python"
-subscribers_count = number_of_subscribers(subreddit_name)
-print(f"The number of subscribers for r/{subreddit_name} is: {subscribers_count}")
+    results = response.json().get("data")
+    return results.get("subscribers")
