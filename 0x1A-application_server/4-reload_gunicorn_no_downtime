@@ -1,16 +1,4 @@
 #!/usr/bin/env bash
+# Gracefully reloads Gunicorn.
 
-# Get the PID of the Gunicorn master process
-GUNICORN_PID=$(ps aux | grep gunicorn | grep master | awk '{print $2}')
-
-# Gracefully stop the old workers
-kill -s HUP $GUNICORN_PID
-
-# Wait for the old workers to finish their current requests and shutdown
-while ps aux | grep gunicorn | grep old_worker; do
-    sleep 1
-done
-
-# Start new workers with the new application code or configuration
-# This is automatically handled by Gunicorn when the master process receives the HUP signal
-
+ps aux | grep gunicorn | awk '{ print $2 }' | xargs kill -HUP
