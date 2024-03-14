@@ -1,4 +1,20 @@
 #!/usr/bin/env bash
-# Gracefully reloads Gunicorn.
+# Gracefully reloads Gunicorn without causing downtime.
 
-ps aux | grep gunicorn | awk '{ print $2 }' | xargs kill -HUP
+# Get the PID of the Gunicorn master process
+MASTER_PID=$(ps aux | grep 'gunicorn: master' | awk 'NR==1{print $2}')
+
+# Check if the master PID was found
+if [[ -z "$MASTER_PID" ]]; then
+    echo "Gunicorn master process not found."
+    exit 1
+fi
+
+# Send HUP signal to the master process to gracefully reload workers
+kill -HUP "$MASTER_PID"
+
+# Optionally, wait for old workers to shut down and new workers to start
+# This can be done by monitoring the process list or log files
+# Implement additional logic here if needed
+
+echo "Gunicorn has been reloaded gracefully."
