@@ -1,15 +1,16 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 # Get the PID of the Gunicorn master process
-master_pid=$(ps aux | grep '[g]unicorn' | awk '{print $2}')
+GUNICORN_PID=$(ps aux | grep gunicorn | grep master | awk '{print $2}')
 
-# Check if Gunicorn master process is running
-if [ -z "$master_pid" ]; then
-    echo "Gunicorn master process not found. Make sure Gunicorn is running."
-    exit 1
-fi
+# Gracefully stop the old workers
+kill -s HUP $GUNICORN_PID
 
-# Gracefully restart Gunicorn master process
-kill -s HUP "$master_pid"
+# Wait for the old workers to finish their current requests and shutdown
+while ps aux | grep gunicorn | grep old_worker; do
+    sleep 1
+done
 
-echo "Gunicorn master process has been gracefully restarted."
+# Start new workers with the new application code or configuration
+# This is automatically handled by Gunicorn when the master process receives the HUP signal
 
